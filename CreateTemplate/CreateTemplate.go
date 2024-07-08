@@ -1,4 +1,4 @@
-package createTemplate
+package CreateTemplate
 
 // CreateTemplate 创建代码模板接口
 type CreateTemplate interface {

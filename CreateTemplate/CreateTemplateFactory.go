@@ -1,9 +1,10 @@
-package createTemplate
+package CreateTemplate
 
 import (
 	"github.com/SleepingLucas/ctb/CreateTemplate/impl"
 )
 
+// CreateTemplateFactory 创建代码模板工厂
 func CreateTemplateFactory(templateType, problem, url string) CreateTemplate {
 	switch templateType {
 	case "cf":

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"regexp"
 
-	"github.com/SleepingLucas/ctb/createTemplate"
+	"github.com/SleepingLucas/ctb/CreateTemplate"
 )
 
 var (
@@ -47,7 +47,7 @@ func main() {
 		}
 	}
 
-	factory := createTemplate.CreateTemplateFactory(templateType, problemName, url)
+	factory := CreateTemplate.CreateTemplateFactory(templateType, problemName, url)
 
 	if !testOnly {
 		// 生成代码文件
