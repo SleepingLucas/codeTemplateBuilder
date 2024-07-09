@@ -1,7 +1,7 @@
 package CreateTemplate
 
 import (
-	"github.com/SleepingLucas/ctb/CreateTemplate/impl"
+	"github.com/SleepingLucas/ctb/createTemplate/impl"
 )
 
 // CreateTemplateFactory 创建代码模板工厂
