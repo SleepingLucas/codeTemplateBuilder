@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"os/exec"
 	"regexp"
 
 	"github.com/SleepingLucas/ctb/CreateTemplate"
@@ -51,18 +52,25 @@ func main() {
 
 	if !testOnly {
 		// 生成代码文件
-		err := factory.CreateMain()
+		codePath, err := factory.CreateMain()
 		if err != nil {
 			panic(err)
 		}
+
+		// 执行命令以在vscode中打开文件：code codePath
+		cmd := exec.Command("code", codePath)
+		_ = cmd.Run()
 	}
 
 	if !codeOnly {
 		// 生成测试文件
-		err := factory.CreateTest()
+		testPath, err := factory.CreateTest()
 		if err != nil {
 			panic(err)
 		}
+
+		cmd := exec.Command("code", testPath)
+		_ = cmd.Run()
 	}
 }
 

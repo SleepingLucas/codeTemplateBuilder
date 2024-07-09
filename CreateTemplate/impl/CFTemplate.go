@@ -35,7 +35,7 @@ func (cf CFTemplate) isExist(suf string) (path string, exist bool) {
 }
 
 // CreateMain 创建代码文件
-func (cf CFTemplate) CreateMain() (err error) {
+func (cf CFTemplate) CreateMain() (codePath string, err error) {
 	// 判断文件是否存在
 	codePath, exist := cf.isExist("")
 	if exist {
@@ -43,19 +43,19 @@ func (cf CFTemplate) CreateMain() (err error) {
 		s := "Y"
 		fmt.Scanln(&s)
 		if strings.ToLower(s) != "y" {
-			return nil
+			return "", nil
 		} else {
 			// 删除文件
 			err := os.Remove(codePath)
 			if err != nil {
-				return err
+				return "", err
 			}
 		}
 	}
 
 	file, err := os.OpenFile(codePath, os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
-		return err
+		return "", err
 	}
 	defer file.Close()
 
@@ -78,11 +78,11 @@ func cf%s(in io.Reader, out io.Writer) {
 func main() { cf%s(bufio.NewReader(os.Stdin), os.Stdout) }
 `, cf.ProblemName, cf.ProblemName))
 
-	return nil
+	return
 }
 
 // CreateTest 创建测试文件
-func (cf CFTemplate) CreateTest() (err error) {
+func (cf CFTemplate) CreateTest() (testPath string, err error) {
 	// 判断文件是否存在
 	testPath, exist := cf.isExist("_test")
 	if exist {
@@ -90,19 +90,19 @@ func (cf CFTemplate) CreateTest() (err error) {
 		s := "Y"
 		fmt.Scanln(&s)
 		if strings.ToLower(s) != "y" {
-			return nil
+			return "", nil
 		} else {
 			// 删除文件
 			err := os.Remove(testPath)
 			if err != nil {
-				return err
+				return "", err
 			}
 		}
 	}
 
 	file, err := os.OpenFile(testPath, os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
-		return err
+		return "", err
 	}
 	defer file.Close()
 
@@ -190,7 +190,7 @@ func Test_cf%s(t *testing.T) {
 		)
 	}
 
-	return nil
+	return
 }
 
 // crawler 爬取 codeforces 题目样例
