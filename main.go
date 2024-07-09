@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os/exec"
 	"regexp"
+	"sync"
 
 	"github.com/SleepingLucas/ctb/CreateTemplate"
 )
@@ -50,28 +51,40 @@ func main() {
 
 	factory := CreateTemplate.CreateTemplateFactory(templateType, problemName, url)
 
+	var wg sync.WaitGroup
+
 	if !testOnly {
 		// 生成代码文件
-		codePath, err := factory.CreateMain()
-		if err != nil {
-			panic(err)
-		}
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			codePath, err := factory.CreateMain()
+			if err != nil {
+				panic(err)
+			}
 
-		// 执行命令以在vscode中打开文件：code codePath
-		cmd := exec.Command("code", codePath)
-		_ = cmd.Run()
+			// 执行命令以在vscode中打开文件：code codePath
+			cmd := exec.Command("code", codePath)
+			_ = cmd.Run()
+		}()
 	}
 
 	if !codeOnly {
 		// 生成测试文件
-		testPath, err := factory.CreateTest()
-		if err != nil {
-			panic(err)
-		}
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			testPath, err := factory.CreateTest()
+			if err != nil {
+				panic(err)
+			}
 
-		cmd := exec.Command("code", testPath)
-		_ = cmd.Run()
+			cmd := exec.Command("code", testPath)
+			_ = cmd.Run()
+		}()
 	}
+
+	wg.Wait()
 }
 
 func GetProblemName(url string) string {
