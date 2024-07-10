@@ -9,6 +9,8 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/SleepingLucas/ctb/config"
+
 	"github.com/PuerkitoBio/goquery"
 )
 
@@ -62,23 +64,20 @@ func (cf CFTemplate) CreateMain() (codePath string, err error) {
 	writer := bufio.NewWriter(file)
 	defer writer.Flush()
 
-	_, err = writer.WriteString(fmt.Sprintf(`package main
+	var builder strings.Builder
+	for _, line := range config.Conf.Codeforces.Code {
+		builder.WriteString(line)
+		builder.WriteString("\n")
+	}
 
-import (
-	"bufio"
-	. "fmt"
-	"io"
-	"os"
-)
+	template := builder.String()
+	args := make([]any, strings.Count(template, "%s"))
 
-func cf%s(in io.Reader, _w io.Writer) {
-	out := bufio.NewWriter(_w)
-	defer out.Flush()
-	
-}
+	for i := range args {
+		args[i] = cf.ProblemName
+	}
 
-func main() { cf%s(bufio.NewReader(os.Stdin), os.Stdout) }
-`, cf.ProblemName, cf.ProblemName))
+	_, err = writer.WriteString(fmt.Sprintf(template, args...))
 
 	return
 }

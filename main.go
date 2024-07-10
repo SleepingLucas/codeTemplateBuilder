@@ -8,6 +8,7 @@ import (
 	"sync"
 
 	"github.com/SleepingLucas/ctb/CreateTemplate"
+	"github.com/SleepingLucas/ctb/config"
 )
 
 var (
@@ -22,6 +23,12 @@ var (
 )
 
 func main() {
+	// 初始化配置
+	if err := config.InitConfig(); err != nil {
+		fmt.Println("init settings failed, err:", err)
+		return
+	}
+
 	flag.StringVar(&templateType, "type", "cf", "模板类型")
 	flag.StringVar(&problemName, "problem", "", "题目名") // 例如 1840D
 	flag.StringVar(&problemName, "p", "", "题目名(shortcut)")
@@ -49,7 +56,7 @@ func main() {
 		}
 	}
 
-	factory := CreateTemplate.CreateTemplateFactory(templateType, problemName, url)
+	factory := CreateTemplate.Factory(templateType, problemName, url)
 
 	var wg sync.WaitGroup
 
@@ -87,6 +94,7 @@ func main() {
 	wg.Wait()
 }
 
+// GetProblemName 从题目链接中获取题目名
 func GetProblemName(url string) string {
 	// 目前有两种链接格式
 	// https://codeforces.com/contest/1926/problem/G
