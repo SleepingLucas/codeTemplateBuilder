@@ -71,7 +71,9 @@ import (
 	"os"
 )
 
-func cf%s(in io.Reader, out io.Writer) {
+func cf%s(in io.Reader, _w io.Writer) {
+	out := bufio.NewWriter(_w)
+	defer out.Flush()
 	
 }
 
