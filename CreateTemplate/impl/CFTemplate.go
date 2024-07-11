@@ -72,13 +72,11 @@ func (cf CFTemplate) CreateMain() (codePath string, err error) {
 	}
 
 	// 从模板中读取
-	template := builder.String()
-	args := make([]any, strings.Count(template, "%s"))
-	for i := range args {
-		args[i] = cf.ProblemName
+	templatef := builder.String()
+	tpl := template.Must(template.New("code").Parse(templatef))
+	if err = tpl.Execute(writer, map[string]any{"dqid": cf.ProblemName}); err != nil {
+		return "", err
 	}
-
-	_, err = writer.WriteString(fmt.Sprintf(template, args...))
 
 	return
 }
@@ -127,12 +125,9 @@ func (cf CFTemplate) CreateTest() (testPath string, err error) {
 	tpl := template.Must(template.New("test").Parse(testTemplatef))
 
 	if cf.URL == "" {
-		var sb strings.Builder
-		if err := tpl.Execute(&sb, map[string]any{"dqid": cf.ProblemName, "dexample": noTestStr}); err != nil {
+		if err := tpl.Execute(writer, map[string]any{"dqid": cf.ProblemName, "dexample": noTestStr}); err != nil {
 			return "", err
 		}
-
-		_, err = writer.WriteString(sb.String())
 	} else {
 		// 爬取题目样例
 		inputs, outputs := cf.crawler(cf.URL)
@@ -178,12 +173,9 @@ func (cf CFTemplate) CreateTest() (testPath string, err error) {
 		}
 
 		// 写入测试文件
-		var sb strings.Builder
-		if err := tpl.Execute(&sb, map[string]any{"dqid": cf.ProblemName, "dexample": strings.TrimSuffix(totalBuilder.String(), "\n")}); err != nil {
+		if err := tpl.Execute(writer, map[string]any{"dqid": cf.ProblemName, "dexample": strings.TrimSuffix(totalBuilder.String(), "\n")}); err != nil {
 			return "", err
 		}
-
-		_, err = writer.WriteString(sb.String())
 	}
 
 	return
