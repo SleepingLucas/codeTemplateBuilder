@@ -71,8 +71,8 @@ func main() {
 			}
 
 			// 执行命令以在vscode中打开文件：code codePath
-			cmd := exec.Command("code", codePath)
-			_ = cmd.Run()
+			_ = exec.Command("code", codePath)
+			//_ = cmd.Run()
 		}()
 	}
 
@@ -86,8 +86,8 @@ func main() {
 				panic(err)
 			}
 
-			cmd := exec.Command("code", testPath)
-			_ = cmd.Run()
+			_ = exec.Command("code", testPath)
+			//_ = cmd.Run()
 		}()
 	}
 

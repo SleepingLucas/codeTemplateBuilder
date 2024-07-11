@@ -8,6 +8,7 @@ import (
 	"os"
 	"strings"
 	"sync"
+	"text/template"
 
 	"github.com/SleepingLucas/ctb/config"
 
@@ -70,9 +71,9 @@ func (cf CFTemplate) CreateMain() (codePath string, err error) {
 		builder.WriteString("\n")
 	}
 
+	// 从模板中读取
 	template := builder.String()
 	args := make([]any, strings.Count(template, "%s"))
-
 	for i := range args {
 		args[i] = cf.ProblemName
 	}
@@ -110,31 +111,31 @@ func (cf CFTemplate) CreateTest() (testPath string, err error) {
 	writer := bufio.NewWriter(file)
 	defer writer.Flush()
 
-	testTemplatef := `package main
-
-import (
-	"testing"
-
-	"github.com/EndlessCheng/codeforces-go/main/testutil"
-)
-
-func Test_cf%s(t *testing.T) {
-	testCases := [][2]string{
-%s
+	var builder strings.Builder
+	for _, line := range config.Conf.Codeforces.Test {
+		builder.WriteString(line)
+		builder.WriteString("\n")
 	}
-	testutil.AssertEqualStringCase(t, testCases, 0, cf%s)
-}`
+
+	testTemplatef := builder.String()
+
+	noTestStr := `		{
+			` + "`在此键入样例输入`,\n" +
+		"			`在此键入样例输出`," + `
+		},`
+
+	tpl := template.Must(template.New("test").Parse(testTemplatef))
 
 	if cf.URL == "" {
-		_, err = writer.WriteString(fmt.Sprintf(testTemplatef, cf.ProblemName,
-			`		{
-			`+"`在此键入样例输入`,\n"+
-				"			`在此键入样例输出`,"+`
-		},`, cf.ProblemName))
+		var sb strings.Builder
+		if err := tpl.Execute(&sb, map[string]any{"dqid": cf.ProblemName, "dexample": noTestStr}); err != nil {
+			return "", err
+		}
+
+		_, err = writer.WriteString(sb.String())
 	} else {
 		// 爬取题目样例
 		inputs, outputs := cf.crawler(cf.URL)
-		// off := 3 // 偏移量
 
 		var totalBuilder strings.Builder
 
@@ -154,9 +155,6 @@ func Test_cf%s(t *testing.T) {
 					break
 				}
 				builder.WriteString("\n")
-				// for range off {
-				// 	builder.WriteString("\t")
-				// }
 				builder.WriteString(strings.TrimSpace(line))
 			}
 			builder.WriteString("`,\n")
@@ -172,9 +170,6 @@ func Test_cf%s(t *testing.T) {
 					break
 				}
 				builder.WriteString("\n")
-				// for range off {
-				// 	builder.WriteString("\t")
-				// }
 				builder.WriteString(strings.TrimSpace(line))
 			}
 			builder.WriteString("`,\n		},\n")
@@ -182,13 +177,13 @@ func Test_cf%s(t *testing.T) {
 			totalBuilder.WriteString(builder.String())
 		}
 
-		_, err = writer.WriteString(
-			fmt.Sprintf(testTemplatef,
-				cf.ProblemName,
-				strings.TrimSuffix(totalBuilder.String(), "\n"),
-				cf.ProblemName,
-			),
-		)
+		// 写入测试文件
+		var sb strings.Builder
+		if err := tpl.Execute(&sb, map[string]any{"dqid": cf.ProblemName, "dexample": strings.TrimSuffix(totalBuilder.String(), "\n")}); err != nil {
+			return "", err
+		}
+
+		_, err = writer.WriteString(sb.String())
 	}
 
 	return

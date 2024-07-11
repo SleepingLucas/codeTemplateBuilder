@@ -26,12 +26,13 @@ type CodeSnippet struct {
 
 // Template 代码片段模板
 type Template struct {
-	Code []string `json:"code"`
+	Code []string `json:"code"` // 代码模板
+	Test []string `json:"test"` // 测试模板
 }
 
 // Templates 代码片段模板集合
 type Templates struct {
-	Codeforces Template `json:"codeforces"`
+	Codeforces Template `json:"codeforces"` // Codeforces 模板
 }
 
 // Config ctb 配置文件，存储代码片段，包括但不限于 CF 模板
