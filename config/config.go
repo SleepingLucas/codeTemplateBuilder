@@ -7,6 +7,8 @@ import (
 	"path/filepath"
 	"reflect"
 
+	"github.com/pkg/errors"
+
 	"github.com/spf13/viper"
 )
 
@@ -43,7 +45,7 @@ func InitConfig() error {
 
 	// 读取配置文件
 	if err = UnmarshalConfig(configFilePath); err != nil {
-		return err
+		return errors.WithMessage(err, "读取配置文件失败，请检查配置文件格式是否正确或尝试重置配置文件")
 	}
 
 	// 判断是否有空配置，有则写入默认配置

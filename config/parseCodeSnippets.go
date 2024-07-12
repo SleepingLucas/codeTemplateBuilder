@@ -6,6 +6,8 @@ import (
 	"io"
 	"os"
 	"regexp"
+
+	"github.com/pkg/errors"
 )
 
 // PrintToConsole vscode 用户代码片段的 Print to console 部分
@@ -55,18 +57,18 @@ func ParseVsCodeSnippet(path string) (code []string, err error) {
 	defer jsonFile.Close()
 
 	// 读取并解析文件内容
-	byteCodeValue, _ := io.ReadAll(jsonFile)
-	newCodeBytes := tabRe.ReplaceAllFunc(byteCodeValue, func(s []byte) []byte {
+	byteValue, _ := io.ReadAll(jsonFile)
+	newBytes := tabRe.ReplaceAllFunc(byteValue, func(s []byte) []byte {
 		return bytes.ReplaceAll(s, []byte("\t"), []byte("\\t"))
 	})
-	newCodeBytes = removeComments(newCodeBytes)
-	newCodeBytes = bytes.ReplaceAll(newCodeBytes, []byte("$0"), []byte(""))
-	newCodeBytes = tplRe.ReplaceAll(newCodeBytes, []byte("{{ .d$1 }}"))
+	newBytes = removeComments(newBytes)
+	newBytes = bytes.ReplaceAll(newBytes, []byte("$0"), []byte(""))
+	newBytes = tplRe.ReplaceAll(newBytes, []byte("{{ .d$1 }}"))
 
 	codeSnippet := new(CodeSnippet)
-	err = json.Unmarshal(newCodeBytes, codeSnippet)
+	err = json.Unmarshal(newBytes, codeSnippet)
 	if err != nil {
-		return nil, err
+		return nil, errors.WithMessage(err, "解析代码片段失败，请检查代码片段格式是否正确（不存在尾逗号等）")
 	}
 
 	return codeSnippet.Body, nil

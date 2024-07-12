@@ -7,24 +7,24 @@ import (
 )
 
 type InitConfig struct {
-	initFlagSet *flag.FlagSet // flag 集合
+	InitFlagSet *flag.FlagSet // flag 集合
 	reset       bool          // 重置配置文件
 	cfCodePath  string        // codeforces 代码片段路径
 	cfTestPath  string        // codeforces 测试片段路径
 }
 
 func (i *InitConfig) Init() error {
-	i.initFlagSet = flag.NewFlagSet("init", flag.ExitOnError)
+	i.InitFlagSet = flag.NewFlagSet("init", flag.ExitOnError)
 
-	i.initFlagSet.BoolVar(&i.reset, "reset", false, "重置配置文件")
-	i.initFlagSet.StringVar(&i.cfCodePath, "cfCode", "", "codeforces 代码片段路径")
-	i.initFlagSet.StringVar(&i.cfTestPath, "cfTest", "", "codeforces 测试片段路径")
+	i.InitFlagSet.BoolVar(&i.reset, "reset", false, "重置配置文件")
+	i.InitFlagSet.StringVar(&i.cfCodePath, "cfcode", "", "codeforces 代码片段路径")
+	i.InitFlagSet.StringVar(&i.cfTestPath, "cftest", "", "codeforces 测试片段路径")
 
 	return nil
 }
 
 func (i *InitConfig) Run(args []string) (err error) {
-	if err = i.initFlagSet.Parse(args); err != nil {
+	if err = i.InitFlagSet.Parse(args); err != nil {
 		return err
 	}
 

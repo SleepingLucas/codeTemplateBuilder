@@ -77,8 +77,8 @@ func (c *Ctb) Run(args []string) error {
 			}
 
 			// 执行命令以在vscode中打开文件：code codePath
-			_ = exec.Command("code", codePath)
-			//_ = cmd.Run()
+			cmd := exec.Command("code", codePath)
+			_ = cmd.Run()
 		}()
 	}
 
@@ -92,8 +92,8 @@ func (c *Ctb) Run(args []string) error {
 				panic(err)
 			}
 
-			_ = exec.Command("code", testPath)
-			//_ = cmd.Run()
+			cmd := exec.Command("code", testPath)
+			_ = cmd.Run()
 		}()
 	}
 

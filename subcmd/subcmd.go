@@ -11,8 +11,8 @@ type SubCmd interface {
 	Exec(args []string) error // 执行子命令
 }
 
-// SubCmdFactory 子命令工厂
-func SubCmdFactory(cmd string) SubCmd {
+// Factory 子命令工厂
+func Factory(cmd string) SubCmd {
 	switch cmd {
 	case "init":
 		return &initConfig.InitConfig{}
