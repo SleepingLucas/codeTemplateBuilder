@@ -219,8 +219,6 @@ func (cf CFTemplate) crawler(url string) (inputs, outputs []bytes.Buffer) {
 
 			inputmp.Store(id, buf)
 			n++
-
-			// fmt.Printf("样例输入 %d 爬取成功\n", id+1)
 		}(i)
 	})
 
@@ -235,13 +233,10 @@ func (cf CFTemplate) crawler(url string) (inputs, outputs []bytes.Buffer) {
 			})
 
 			outputmp.Store(id, buf)
-
-			// fmt.Printf("样例输出 %d 爬取成功\n", id+1)
 		}(i)
 	})
 
 	wg.Wait()
-	// fmt.Println("完成爬取")
 
 	for i := 0; i < n; i++ {
 		if val, ok := inputmp.Load(i); ok {

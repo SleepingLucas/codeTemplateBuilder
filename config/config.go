@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"reflect"
 
 	"github.com/spf13/viper"
 )
@@ -69,6 +70,41 @@ func InitConfig() error {
 	// 反序列化配置文件
 	if err = viper.Unmarshal(Conf); err != nil {
 		panic(fmt.Errorf("unmarshal to Conf failed, err:%v\n", err))
+	}
+
+	// 判断是否有空配置，有则写入默认配置
+	val := reflect.ValueOf(Conf).Elem()
+	defaultVal := reflect.ValueOf(defaultConfig)
+	flag := false
+	// traverseAndCheckEmpty 遍历配置文件并检查是否有空配置
+	var traverseAndCheckEmpty func(nowField reflect.Value, defaultField reflect.Value)
+	traverseAndCheckEmpty = func(nowField reflect.Value, defaultField reflect.Value) {
+		for i := 0; i < nowField.NumField(); i++ {
+			field := nowField.Field(i)
+			// 检查字段是否为结构体，如果是，则递归遍历
+			if field.Kind() == reflect.Struct {
+				traverseAndCheckEmpty(field, defaultField.Field(i))
+			} else {
+				if field.IsZero() {
+					// 将默认配置 defaultConfig 的对应字段写入 Conf
+					field.Set(defaultField.Field(i))
+					flag = true
+				}
+			}
+		}
+	}
+	traverseAndCheckEmpty(val, defaultVal)
+	if flag {
+		// 打开配置文件
+		file, err := os.OpenFile(configFilePath, os.O_WRONLY|os.O_TRUNC, 0644)
+		if err != nil {
+			panic(err)
+		}
+		defer file.Close()
+		// 写入配置
+		if err := WriteConfig(file, *Conf); err != nil {
+			panic(err)
+		}
 	}
 
 	return nil
