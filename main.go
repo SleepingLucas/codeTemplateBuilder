@@ -36,7 +36,6 @@ func main() {
 	}
 
 	subCmd := subcmd.Factory(os.Args[1])
-	fmt.Println(os.Args[1])
 
 	if err := subCmd.Exec(os.Args); err != nil {
 		fmt.Println(err)

@@ -45,8 +45,6 @@ func (c *Ctb) Init() error {
 func (c *Ctb) Run(args []string) error {
 	flag.Parse()
 
-	fmt.Printf("ctb: %+v\n", c)
-
 	// 参数校验
 	if c.url == "" {
 		if c.problemName == "" {
