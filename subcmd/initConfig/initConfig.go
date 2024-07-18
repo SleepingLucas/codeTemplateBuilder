@@ -2,6 +2,7 @@ package initConfig
 
 import (
 	"flag"
+	"sync"
 
 	"github.com/SleepingLucas/ctb/config"
 )
@@ -11,14 +12,18 @@ type InitConfig struct {
 	reset       bool          // 重置配置文件
 	cfCodePath  string        // codeforces 代码片段路径
 	cfTestPath  string        // codeforces 测试片段路径
+
+	once sync.Once
 }
 
 func (i *InitConfig) Init() error {
-	i.InitFlagSet = flag.NewFlagSet("init", flag.ExitOnError)
+	i.once.Do(func() {
+		i.InitFlagSet = flag.NewFlagSet("init", flag.ExitOnError)
 
-	i.InitFlagSet.BoolVar(&i.reset, "reset", false, "重置配置文件")
-	i.InitFlagSet.StringVar(&i.cfCodePath, "cfcode", "", "codeforces 代码片段路径")
-	i.InitFlagSet.StringVar(&i.cfTestPath, "cftest", "", "codeforces 测试片段路径")
+		i.InitFlagSet.BoolVar(&i.reset, "reset", false, "重置配置文件")
+		i.InitFlagSet.StringVar(&i.cfCodePath, "cfcode", "", "codeforces 代码片段路径")
+		i.InitFlagSet.StringVar(&i.cfTestPath, "cftest", "", "codeforces 测试片段路径")
+	})
 
 	return nil
 }
@@ -74,4 +79,8 @@ func (i *InitConfig) Exec(args []string) error {
 	}
 
 	return i.Run(args[2:])
+}
+
+func (i *InitConfig) PrintDefaults() {
+	i.InitFlagSet.PrintDefaults()
 }

@@ -29,15 +29,19 @@ type Ctb struct {
 	testOnly     bool   // 只生成测试文件
 	codeOnly     bool   // 只生成代码文件
 	url          string // 题目链接
+
+	once sync.Once
 }
 
 func (c *Ctb) Init() error {
-	flag.StringVar(&c.templateType, "type", "cf", "模板类型")
-	flag.StringVar(&c.problemName, "problem", "", "题目名") // 例如 1840D
-	flag.StringVar(&c.problemName, "p", "", "题目名(shortcut)")
-	flag.BoolVar(&c.testOnly, "test", false, "只生成测试文件")
-	flag.BoolVar(&c.codeOnly, "code", false, "只生成代码文件")
-	flag.StringVar(&c.url, "url", "", "题目链接")
+	c.once.Do(func() {
+		flag.StringVar(&c.templateType, "type", "cf", "模板类型")
+		flag.StringVar(&c.problemName, "problem", "", "题目名") // 例如 1840D
+		flag.StringVar(&c.problemName, "p", "", "题目名(shortcut)")
+		flag.BoolVar(&c.testOnly, "test", false, "只生成测试文件")
+		flag.BoolVar(&c.codeOnly, "code", false, "只生成代码文件")
+		flag.StringVar(&c.url, "url", "", "题目链接")
+	})
 
 	return nil
 }
@@ -138,4 +142,8 @@ func GetProblemName(url string) string {
 	}
 
 	return ""
+}
+
+func (c *Ctb) PrintDefaults() {
+	flag.PrintDefaults()
 }

@@ -5,10 +5,6 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/SleepingLucas/ctb/subcmd/ctb"
-
-	"github.com/SleepingLucas/ctb/subcmd/initConfig"
-
 	"github.com/SleepingLucas/ctb/subcmd"
 )
 
@@ -17,15 +13,15 @@ func init() {
 		fmt.Println("Usage: ctb <command> [arguments]")
 		fmt.Println("The commands are:")
 		fmt.Println(" 空	生成代码片段")
-		ctb := new(ctb.Ctb)
+		ctb := subcmd.Factory("ctb")
 		ctb.Init()
-		flag.PrintDefaults()
+		ctb.PrintDefaults()
 		fmt.Println()
 
 		fmt.Println(" init	初始化配置文件")
-		initConfig := &initConfig.InitConfig{}
+		initConfig := subcmd.Factory("init")
 		initConfig.Init()
-		initConfig.InitFlagSet.PrintDefaults()
+		initConfig.PrintDefaults()
 	}
 }
 
